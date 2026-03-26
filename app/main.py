@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from starlette.responses import HTMLResponse
 
+from app.rotas import cliente
+
 app = FastAPI(
   title="Techlog Solutions API",
   description="CRM for Techlog Solutions",
   version="1.0.0",
 )
+
+app.include_router(cliente.router)
 
 @app.get("/")
 async def health_check():
