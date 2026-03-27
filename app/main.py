@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 
-from app.rotas import cliente, login
+from app.rotas import cliente, login, registro
 
 templates = Jinja2Templates(directory="templates")
 
@@ -17,6 +17,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(cliente.router)
 app.include_router(cliente.front_router)
 app.include_router(login.router)
+app.include_router(registro.router)
 
 
 @app.get("/")

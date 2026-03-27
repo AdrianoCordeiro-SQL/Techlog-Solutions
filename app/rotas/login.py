@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 import secrets
-from typing import Optional
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+
+from app.banco_de_dados.usuario_repositorio import UsuarioRepositorio
+from app.dependencias import obter_usuario_repositorio
 
 templates = Jinja2Templates(directory="templates")
 
 router = APIRouter()
 
-ADMIN_EMAIL = "admin@techlog.com.br"
-ADMIN_SENHA = "senha123"
 
 def _render_login(
     request: Request,
@@ -43,11 +44,14 @@ async def pagina_login(request: Request):
 
 @router.post("/login", response_class=HTMLResponse)
 async def realizar_login(
+    usuario_repositorio: Annotated[
+        UsuarioRepositorio, Depends(obter_usuario_repositorio)
+    ],
     request: Request,
     email: str = Form(...),
     senha: str = Form(...),
 ):
-    email = email.strip()
+    email = (email or "").strip()
     if not email or not senha:
         return _render_login(
             request,
@@ -56,24 +60,14 @@ async def realizar_login(
             error="Email e senha são obrigatórios.",
         )
 
-    if email.lower() != ADMIN_EMAIL or senha != ADMIN_SENHA:
+    usuario = await usuario_repositorio.buscar_usuario_por_email_senha(email, senha)
+    if not usuario:
         return _render_login(
             request,
             email=email,
             senha="",
             error="Credenciais inválidas.",
         )
-
-    # Protótipo antigo (mantido comentado): antes aceitava qualquer email/senha.
-    # token = secrets.token_urlsafe(32)
-    # response = RedirectResponse(url="/clientes", status_code=303)
-    # response.set_cookie(
-    #     key="session_token",
-    #     value=token,
-    #     httponly=True,
-    #     samesite="lax",
-    # )
-    # return response
 
     token = secrets.token_urlsafe(32)
     response = RedirectResponse(url="/clientes", status_code=303)
@@ -91,4 +85,3 @@ async def logout():
     response = RedirectResponse(url="/", status_code=303)
     response.delete_cookie("session_token")
     return response
-
