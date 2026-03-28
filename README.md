@@ -1,10 +1,11 @@
 # Techlog Solutions CRM
 
-![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.135-009688?logo=fastapi)
-![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)
-![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)
-![pytest](https://img.shields.io/badge/Tests-pytest-yellow?logo=pytest)
+[![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.135-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Tests](https://img.shields.io/badge/Tests-pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white)](https://pytest.org/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
 Sistema de CRM (Customer Relationship Management) para a Techlog Solutions. Permite o gerenciamento completo de clientes com autenticação de usuários por sessão via cookie, interface web responsiva e API REST documentada.
 
@@ -43,6 +44,28 @@ Sistema de CRM (Customer Relationship Management) para a Techlog Solutions. Perm
 
 ---
 
+## Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto a partir do exemplo abaixo. **Nunca commite o `.env` com valores reais.**
+
+```bash
+cp .env.example .env
+```
+
+`.env.example`:
+
+```env
+# Segredo usado para assinar/validar o cookie de sessão
+SECRET_KEY=troque-por-um-valor-longo-e-aleatorio
+
+# Nome do arquivo do banco de dados SQLite
+DATABASE_NAME=techlog.db
+```
+
+> Gere um segredo seguro com: `python -c "import secrets; print(secrets.token_hex(32))"`
+
+---
+
 ## Instalação e execução local
 
 ```bash
@@ -62,7 +85,11 @@ source .venv/bin/activate
 # 3. Instale as dependências
 pip install -r requirements.txt
 
-# 4. Inicie o servidor
+# 4. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env e defina SECRET_KEY com um valor seguro
+
+# 5. Inicie o servidor
 uvicorn app.main:app --reload
 ```
 
@@ -76,8 +103,8 @@ A aplicação estará disponível em `http://localhost:8000`.
 # Build da imagem
 docker build -t techlog-crm .
 
-# Execução do container
-docker run -p 8000:8000 techlog-crm
+# Execução do container (passe as variáveis de ambiente definidas no .env)
+docker run -p 8000:8000 --env-file .env techlog-crm
 ```
 
 A aplicação estará disponível em `http://localhost:8000`.
@@ -161,5 +188,7 @@ projeto-fastapi/
 ├── tests/                            # Testes unitários e de integração
 ├── Dockerfile
 ├── requirements.txt
+├── .env.example                      # Modelo de variáveis de ambiente
+├── .env                              # Variáveis locais (não versionar)
 └── techlog.db                        # Banco de dados SQLite (gerado em runtime)
 ```
